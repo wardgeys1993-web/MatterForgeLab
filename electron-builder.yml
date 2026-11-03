@@ -1,0 +1,37 @@
+appId: org.matterforgelab.desktop
+productName: MatterForge Lab
+artifactName: MatterForge-Lab-Setup-${version}.${ext}
+directories:
+  output: release
+  buildResources: desktop
+files:
+  - dist/**/*
+  - desktop/*.cjs
+  - desktop/release-public-key.pem
+  - desktop/icon.png
+  - package.json
+  - '!**/*.map'
+  - '!**/*.test.*'
+asar: true
+npmRebuild: false
+win:
+  target:
+    - target: nsis
+      arch: x64
+  icon: desktop/icon.ico
+  signAndEditExecutable: true
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: MatterForge Lab
+  deleteAppDataOnUninstall: false
+  runAfterFinish: true
+publish:
+  provider: github
+  owner: wardgeys1993-web
+  repo: MatterForgeLab
+  releaseType: release

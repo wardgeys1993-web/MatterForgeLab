@@ -1,0 +1,11 @@
+import {useState} from 'react'
+import {Brain} from 'lucide-react'
+import {LocalChatExplainer} from './localAI'
+import {researchReport} from './report'
+import type {ResearchSession} from './research'
+
+export default function ResearchAI({session}:{session:ResearchSession}){
+ const [endpoint,setEndpoint]=useState('http://127.0.0.1:11434/v1/chat/completions'),[model,setModel]=useState(''),[busy,setBusy]=useState(false),[answer,setAnswer]=useState(''),[error,setError]=useState('')
+ const run=async(mode:'explain'|'hypotheses')=>{setBusy(true);setError('');setAnswer('');try{setAnswer(await new LocalChatExplainer().run({endpoint,model,mode,evidence:researchReport(session)}))}catch(e){setError(e instanceof Error?e.message:'Local AI is unavailable.')}finally{setBusy(false)}}
+ return <details className="research-ai"><summary><Brain size={16}/> OPTIONAL LOCAL AI RESEARCHER</summary><p>This optional helper sends the completed report to the local server you specify. It can explain results or suggest untested follow-ups. It cannot change the research data or run experiments. Its text is unverified. The algorithmic researcher works without it.</p><div className="research-ai-fields"><label>Local server endpoint<input aria-label="Local AI endpoint" value={endpoint} onChange={e=>setEndpoint(e.target.value)} disabled={busy}/></label><label>Local model name<input aria-label="Local AI model" value={model} onChange={e=>setModel(e.target.value)} disabled={busy} placeholder="Your installed model"/></label></div><div className="research-actions"><button className="outline" disabled={busy||session.stage!=='complete'} onClick={()=>run('explain')}>ASK LOCAL AI TO EXPLAIN</button><button className="outline" disabled={busy||session.stage!=='complete'} onClick={()=>run('hypotheses')}>SUGGEST FOLLOW-UP IDEAS</button></div>{busy&&<p role="status">Waiting for the local server. The research record is unchanged.</p>}{error&&<p className="research-warning" role="status">{error}</p>}{answer&&<div className="research-ai-answer"><b>LOCAL AI RESPONSE, UNVERIFIED</b><p>{answer}</p></div>}<p>Requires a running OpenAI-compatible local server that permits this browser origin. No server or model is started automatically. See the <a href="https://docs.ollama.com/api/openai-compatibility" target="_blank" rel="noreferrer">Ollama local interface documentation</a>.</p></details>
+}

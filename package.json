@@ -1,0 +1,57 @@
+{
+  "name": "matterforgelab",
+  "private": true,
+  "version": "0.8.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:ui": "playwright test",
+    "benchmark": "node --experimental-strip-types scripts/benchmark.mjs",
+    "benchmark:browser": "node scripts/browser-performance.mjs",
+    "desktop": "npm run build && electron .",
+    "icons": "node scripts/create-icons.mjs",
+    "dist:win": "npm run build && npm run icons && electron-builder --win nsis --x64 --publish never",
+    "test:desktop": "node --test desktop-tests/*.node.cjs",
+    "test:desktop:smoke": "node scripts/desktop-smoke.mjs",
+    "privacy:check": "node scripts/privacy-check.mjs",
+    "release:sign": "node scripts/sign-release.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource-variable/newsreader": "^5.3.0",
+    "electron-updater": "6.8.11",
+    "lucide-react": "^1.66.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@electron/asar": "4.3.1",
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "electron": "45.2.1",
+    "electron-builder": "26.18.0",
+    "oxlint": "^1.89.0",
+    "sharp": "0.35.5",
+    "typescript": "~7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.1.0"
+  },
+  "description": "An offline scientific playground for self-assembly and reproducible research.",
+  "productName": "MatterForge Lab",
+  "main": "desktop/main.cjs",
+  "author": {
+    "name": "MatterForge Lab contributors"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wardgeys1993-web/MatterForgeLab.git"
+  }
+}

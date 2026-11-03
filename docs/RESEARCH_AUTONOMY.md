@@ -1,0 +1,29 @@
+# Autonomous research architecture
+
+MatterForge's researcher runs the existing simplified two-dimensional teaching model. It is algorithmic optimization, not a scientific molecular dynamics backend and not a claim about real chemistry. It uses a single browser worker and does not need a local AI server.
+
+## Search and objectives
+
+The user chooses square or triangle, a prepared or current-chamber baseline, and one of two fixed scores. The stable objective maximizes the fraction still stable at the deadline. The clean objective minimizes mean unintended bonds at the deadline among settings meeting a user-selected minimum observed stability rate. Ties use stable success and unintended-bond count in a fixed order; if no tested finalist or baseline meets the clean threshold, the baseline is retained as a clearly labeled fallback.
+
+A deterministic random search, keyed by the recorded search seed, proposes distinct combinations of thermal agitation, attraction and bond formation chance. Target, particle count, binding-site rules and all other settings stay fixed. The baseline runs on the full discovery seed set. Each candidate is screened on the first half of that same set, and the best two candidates run on the remaining half. Only the baseline and those two finalists are eligible for final selection. This successive-halving approach limits wasted simulations while providing a second exploratory measurement. It can discard a good configuration early and does not establish a global optimum.
+
+Discovery seeds are drawn uniformly without replacement from nonzero 32-bit values using the browser's cryptographic random generator. The selected candidate is locked using discovery records only. Only after locking are fresh confirmation seeds drawn, excluding every discovery seed. Baseline and winner use the same confirmation seed list and matched arrangement strategy. A fixed starting arrangement is conditional on that layout; the per-seed option creates a different paired layout for each seed. Even with paired seeds, the engine's random draws may diverge between settings.
+
+## Metrics and inference
+
+Each trial records final stable-target status, first time the target held, final unintended bonds and total bonds. Final stability is the primary success metric. First success is secondary and its median excludes runs that never reached the target. Unintended-bond rate counts the fraction of runs with at least one at the deadline, whereas mean unintended bonds counts bonds per run.
+
+Confirmation reports separate baseline and candidate summaries, approximate Wilson score intervals for the marginal success rates, and a conservative Hoeffding bound for the difference in paired stable outcomes. It does not infer a difference from overlap of the marginal intervals. The clean objective also uses a 97.5% bounded paired interval for the mean unintended-bond reduction and an approximate 97.5% Wilson interval for candidate stability. Both must meet their respective criteria for a positive conclusion; the combined coverage is approximate because Wilson is approximate. Otherwise the result is inconclusive, does not reproduce, or has no qualifying candidate as appropriate. These methods assume the settings were fixed before a fresh uniform seed sample. Selecting, tuning or repeatedly rerunning after looking at confirmation data requires a new independent confirmation set.
+
+## Resource limits and recovery
+
+The engine validates the existing model parameters before running. A session permits 2 to 12 candidates, 4 to 50 discovery seeds, 4 to 50 confirmation seeds, up to 100 simulated time units per trial and 6 to 20 particles. The worker advances at most 250 model steps per chunk and schedules the next chunk after a 12 ms pause. It does not use GPU compute. Runtime and workstation load depend on browser and hardware; the limits are not a guarantee of performance on all systems.
+
+A versioned session stores its model marker, objective, baseline, search seed, exact discovery and confirmation lists, candidate parameters, task schedule, trial records and journal. The UI writes a checkpoint after each completed trial. Pause captures the current model state as well. After an unexpected close, recovery resumes from the last saved checkpoint, so an uncheckpointed trial may restart. Browser storage can be unavailable or cleared; the UI reports storage errors and JSON export provides a portable copy. Import is limited to 2 MB and reconstructs the schedule and winner from recorded discovery rows before accepting a checkpoint. Editable files cannot prove their own origin or prove that recorded results were actually produced by the model.
+
+A recorded trial can be replayed from its recorded starting arrangement and motion seed in the chamber. Replaying replaces the active chamber but does not overwrite saved experiment A. Reproducing an individual record is not a guarantee of identical behavior across different browser engines or model versions.
+
+## Optional local AI adapter
+
+The optional helper is separate from the optimizer and is never called automatically. It accepts a user-specified loopback HTTP endpoint ending in `/v1/chat/completions` and a model name, and sends only the completed report on an explicit button press. It can explain the results or suggest untested follow-up hypotheses. Its response is labeled unverified, is not included in the measured report and cannot alter settings, rankings or simulation records. It does not execute code, use cloud endpoints or require an API key. Requests time out after 20 seconds and responses are size-limited. The local server must be running and permit the app's browser origin under CORS. [Ollama's local OpenAI-compatible API documentation](https://docs.ollama.com/api/openai-compatibility) describes one possible interface. No Atlas endpoint or model availability is assumed.

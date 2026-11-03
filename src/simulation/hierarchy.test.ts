@@ -1,0 +1,8 @@
+import {describe,expect,it} from 'vitest'
+import {createHierarchy,hierarchyMetrics,hierarchyStep} from './hierarchy'
+
+describe('hierarchical teaching model',()=>{
+ it('is reproducible, immutable and reaches a connected group with the default seed',()=>{let a=createHierarchy(),b=createHierarchy();const initial=structuredClone(a);for(let i=0;i<8;i++){a=hierarchyStep(a,{selectivity:1,repair:.5});b=hierarchyStep(b,{selectivity:1,repair:.5})}expect(initial).toEqual(createHierarchy());expect(a).toEqual(b);expect(hierarchyMetrics(a).complete).toBe(true);expect(a.firstSuccess).toBe(8)})
+ it('tracks actual faulty modules and can repair them without losing parts',()=>{let s=createHierarchy();for(let i=0;i<15;i++)s=hierarchyStep(s,{selectivity:0,repair:0});expect(hierarchyMetrics(s).defects).toBeGreaterThan(0);const before=s.repaired;for(let i=0;i<40;i++)s=hierarchyStep(s,{selectivity:1,repair:1});expect(s.repaired).toBeGreaterThan(before);expect(hierarchyMetrics(s).complete).toBe(true);const used=s.modules.flatMap(m=>m.parts);expect(new Set(used).size).toBe(used.length);expect(used.length+hierarchyMetrics(s).free).toBe(12);expect(s.modules.every(m=>m.correct&&s.parts[m.parts[0]].module===m.id&&s.parts[m.parts[1]].module===m.id)).toBe(true)})
+ it('rejects invalid probabilities and does not create cyclic module links',()=>{let s=createHierarchy();expect(()=>hierarchyStep(s,{selectivity:-1,repair:0})).toThrow();for(let i=0;i<40;i++)s=hierarchyStep(s,{selectivity:1,repair:0});expect(s.links.length).toBeLessThanOrEqual(Math.max(0,s.modules.length-1));expect(s.modules.every(m=>s.links.filter(l=>l.a===m.id||l.b===m.id).length<=2)).toBe(true)})
+})
