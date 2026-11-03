@@ -73,7 +73,7 @@ try{
  if(process.env.MATTERFORGE_TEST_LIVE_UPDATE==='1'){
   await page.getByRole('button',{name:'App updates',exact:true}).click()
   await page.getByRole('button',{name:'CHECK FOR UPDATES',exact:true}).click()
-  await expect(page.getByRole('status')).toContainText('latest stable release',{timeout:45000})
+  await expect(page.getByRole('dialog').getByRole('status')).toContainText('latest stable release',{timeout:45000})
   checks.push('Live GitHub update check confirms the installed version is current.')
  }
  await fs.writeFile(path.join(output,'verification.json'),JSON.stringify({version,checks,errors,externalRequests:requests},null,2)+'\n')
