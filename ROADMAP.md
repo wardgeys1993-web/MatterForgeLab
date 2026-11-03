@@ -1,5 +1,9 @@
 # MatterForge Lab roadmap
 
+## 2026-11-03, shared publishing instructions
+
+Strengthened the repository instructions to require the shared ship skill, correct account and repository checks, privacy review of source/history and packaged artifacts, preservation of the existing signing key and update identity, and proof of the published assets and installed update behavior. Clarified that newer feature work in the sibling source folder must be deliberately integrated without overwriting the desktop release implementation or downgrading the public version. The shared local rules and skill were updated, and the other two MatterForge development chats were notified. This is an instructions-only change; no app version, installer or update feed changed.
+
 ## 2026-11-03, desktop release 0.8.0
 
 Created a separate desktop release workspace from the existing simulation and research source while other development continues. Added a sandboxed Electron shell, Windows NSIS installer, local chamber recovery, native update controls, a public GitHub release feed and mandatory Ed25519 release verification. Updates are manual and preserve local app data.
