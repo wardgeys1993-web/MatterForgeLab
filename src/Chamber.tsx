@@ -1,13 +1,75 @@
-import {useEffect,useRef} from 'react'
-import type {MutableRefObject} from 'react'
+import {useEffect,useImperativeHandle,useLayoutEffect,useRef,useState} from 'react'
+import type {MutableRefObject,Ref} from 'react'
 import type {State} from './simulation/engine'
-import {siteAngle} from './simulation/engine'
-export default function Chamber({sim,selected,onSelect,highlight,view,onPan,forces,trails}:{sim:MutableRefObject<State>,selected:number|null,onSelect:(n:number|null)=>void,highlight:number[],view:{zoom:number;x:number;y:number},onPan:(x:number,y:number)=>void,forces:boolean,trails:boolean}) {
- const ref=useRef<HTMLCanvasElement>(null), paths=useRef<Record<number,{x:number;y:number}[]>>({}),drag=useRef<{x:number;y:number;startX:number;startY:number;moved:boolean}|null>(null)
- useEffect(()=>{let frame=0;function draw(){const c=ref.current;if(!c)return;const ctx=c.getContext('2d')!,r=c.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);if(c.width!==r.width*dpr||c.height!==r.height*dpr){c.width=r.width*dpr;c.height=r.height*dpr}ctx.setTransform(dpr,0,0,dpr,0,0);const w=r.width,h=r.height,scale=Math.min(w,h)/17*view.zoom,ox=w/2+view.x,oy=h/2+view.y,s=sim.current,bound=7/Math.sqrt(s.params.concentration);const background=ctx.createRadialGradient(ox,oy,0,ox,oy,Math.max(w,h)*.7);background.addColorStop(0,'#182422');background.addColorStop(1,'#0a1013');ctx.fillStyle=background;ctx.fillRect(0,0,w,h)
- ctx.strokeStyle='rgba(226,180,111,.085)';ctx.lineWidth=1;for(let x=ox%scale;x<w;x+=scale){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=oy%scale;y<h;y+=scale){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}ctx.strokeStyle='rgba(255,194,110,.35)';ctx.setLineDash([4,6]);ctx.strokeRect(ox-bound*scale,oy-bound*scale,bound*2*scale,bound*2*scale);ctx.setLineDash([])
- if(trails)for(const p of s.particles){const list=paths.current[p.id]||[];list.push({x:p.x,y:p.y});if(list.length>30)list.shift();paths.current[p.id]=list;ctx.beginPath();list.forEach((v,i)=>i?ctx.lineTo(ox+v.x*scale,oy+v.y*scale):ctx.moveTo(ox+v.x*scale,oy+v.y*scale));ctx.strokeStyle=p.type?'#c7904850':'#75b0a050';ctx.stroke()}
- for(const b of s.bonds){const a=s.particles[b.a],z=s.particles[b.b];ctx.beginPath();ctx.moveTo(ox+a.x*scale,oy+a.y*scale);ctx.lineTo(ox+z.x*scale,oy+z.y*scale);ctx.strokeStyle=b.correct?'#dfb877':'#e27d70';ctx.lineWidth=4;ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=12;ctx.stroke();ctx.shadowBlur=0}
- for(const p of s.particles){const x=ox+p.x*scale,y=oy+p.y*scale,rad=Math.max(6,scale*.42);if(forces){ctx.beginPath();ctx.arc(x,y,(1.05+s.params.range)*scale,0,Math.PI*2);ctx.strokeStyle=p.type?'#d7a76925':'#81bba825';ctx.lineWidth=1;ctx.stroke();ctx.beginPath();ctx.arc(x,y,1.05*scale,0,Math.PI*2);ctx.strokeStyle='#e27d7055';ctx.stroke();ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+p.fx*scale*.18,y+p.fy*scale*.18);ctx.strokeStyle='#f0dfae';ctx.stroke()}const g=ctx.createRadialGradient(x-rad*.3,y-rad*.35,1,x,y,rad*1.5);if(p.type){g.addColorStop(0,'#ffe5ab');g.addColorStop(.35,'#d39a50');g.addColorStop(1,'#775028')}else{g.addColorStop(0,'#d5f1df');g.addColorStop(.35,'#78b7a1');g.addColorStop(1,'#386f64')}ctx.fillStyle=g;ctx.shadowColor=p.type?'#c88b40':'#5aa896';ctx.shadowBlur=16;ctx.beginPath();ctx.arc(x,y,rad,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;if(s.params.siteMode){for(let site=0;site<2;site++){const angle=siteAngle(p,site,s.params.siteMode,s.params.siteSpread),occupied=s.bonds.some(b=>(b.a===p.id&&b.siteA===site)||(b.b===p.id&&b.siteB===site));const px=x+Math.cos(angle)*rad,py=y+Math.sin(angle)*rad,size=Math.max(3,rad*.23),type=site===0?s.params.siteType0:s.params.siteType1;ctx.beginPath();if(type===0)ctx.arc(px,py,size,0,Math.PI*2);else{ctx.moveTo(px,py-size);ctx.lineTo(px+size,py);ctx.lineTo(px,py+size);ctx.lineTo(px-size,py);ctx.closePath()}ctx.fillStyle=type===0?'#b7eee0':'#e4b2f5';ctx.fill();ctx.strokeStyle=occupied?'#ffc066':'#16261b';ctx.lineWidth=occupied?2:1;ctx.stroke()}}if(selected===p.id||highlight.includes(p.id)){ctx.strokeStyle='#fff3cc';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,rad+5,0,Math.PI*2);ctx.stroke()}}frame=requestAnimationFrame(draw)}draw();return()=>cancelAnimationFrame(frame)},[sim,selected,highlight,view,forces,trails])
- return <canvas ref={ref} tabIndex={0} onKeyDown={e=>{const delta:Record<string,[number,number]>={ArrowLeft:[20,0],ArrowRight:[-20,0],ArrowUp:[0,20],ArrowDown:[0,-20]};if(delta[e.key]){e.preventDefault();onPan(...delta[e.key])}}} aria-label="Particle simulation. Click a particle to inspect it, or drag to pan." onPointerDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);drag.current={x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false}}} onPointerMove={e=>{const d=drag.current;if(!d)return;if(Math.hypot(e.clientX-d.startX,e.clientY-d.startY)>4)d.moved=true;if(d.moved){onPan(e.clientX-d.x,e.clientY-d.y);d.x=e.clientX;d.y=e.clientY}}} onPointerUp={e=>{const d=drag.current;drag.current=null;if(!d||d.moved)return;const r=e.currentTarget.getBoundingClientRect(),scale=Math.min(r.width,r.height)/17*view.zoom;let found:number|null=null;for(const p of sim.current.particles)if(Math.hypot(e.clientX-r.left-(r.width/2+view.x+p.x*scale),e.clientY-r.top-(r.height/2+view.y+p.y*scale))<Math.max(10,scale*.5))found=p.id;onSelect(found)}}/>
+import Chamber2D from './Chamber2D'
+import type {Chamber3DScene} from './chamber3DScene'
+import {frameParticles} from './chamberScene'
+import type {CameraAction} from './chamberGeometry'
+
+export type ChamberHandle={command:(action:CameraAction)=>void;exportPNG:()=>string|undefined}
+type Props={ref?:Ref<ChamberHandle>;sim:MutableRefObject<State>;selected:number|null;onSelect:(n:number|null)=>void;highlight:number[];forces:boolean;trails:boolean;labels:boolean}
+const reduced=()=>document.documentElement.dataset.motion==='reduced'
+
+export default function Chamber({ref:handleRef,...props}:Props){
+ const canvas=useRef<HTMLCanvasElement>(null),overlay=useRef<HTMLCanvasElement>(null),container=useRef<HTMLDivElement>(null)
+ const renderer=useRef<Chamber3DScene|null>(null),latest=useRef(props),hovered=useRef<number|null>(null)
+ const fallbackCapture=useRef<(()=>string)|null>(null)
+ const gesture=useRef<{x:number;y:number;moved:boolean;multi:boolean}|null>(null),pointers=useRef(new Set<number>())
+ const [fallback,setFallback]=useState(false),[error,setError]=useState(''),[view,setView]=useState({zoom:1,x:0,y:0})
+ useLayoutEffect(()=>{latest.current=props},[props])
+ useImperativeHandle(handleRef,()=>({
+  command:(action)=>{
+   const p=latest.current
+   if(renderer.current){renderer.current.command(action,p.sim.current,p.selected,reduced());return}
+   if(action==='frame'){const box=container.current!.getBoundingClientRect();setView(frameParticles(p.sim.current,box.width,box.height,p.selected))}
+   else if(action==='zoom-in'||action==='zoom-out')setView(v=>({...v,zoom:Math.max(.6,Math.min(2,v.zoom+(action==='zoom-in'?.2:-.2)))}))
+   else if(action==='reset'||action==='top'||action==='orbit')setView({zoom:1,x:0,y:0})
+  },
+  exportPNG:()=>{const p=latest.current;return renderer.current?.exportPNG(p.sim.current,{selected:p.selected,hovered:hovered.current,highlight:p.highlight,forces:p.forces,trails:p.trails,labels:p.labels},reduced())??fallbackCapture.current?.()}
+ }),[])
+ useEffect(()=>{
+  if(fallback)return
+  const element=canvas.current!,hud=overlay.current!
+  const activePointers=pointers.current
+  let disposed=false,release=()=>{}
+  void import('./chamber3DScene').then(({Chamber3DScene})=>{
+  if(disposed)return
+  const scene=new Chamber3DScene(element,hud);renderer.current=scene
+  let frame=0,width=0,height=0,visible=true,initialized=false
+  const loss=(event:Event)=>{event.preventDefault();setError('The graphics connection was interrupted. Switched to the 2D view.');setFallback(true)}
+  element.addEventListener('webglcontextlost',loss)
+  const resize=new ResizeObserver(entries=>{width=entries[0].contentRect.width;height=entries[0].contentRect.height;scene.resize(width,height)})
+  resize.observe(element)
+  const intersection=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting});intersection.observe(element)
+  const draw=(now:number)=>{
+   frame=requestAnimationFrame(draw)
+   if(!width||!height||!visible||document.hidden)return
+   const p=latest.current
+   if(!initialized){scene.command('reset',p.sim.current,null,true);initialized=true}
+   scene.resize(width,height);scene.render(now,p.sim.current,{selected:p.selected,hovered:hovered.current,highlight:p.highlight,forces:p.forces,trails:p.trails,labels:p.labels},reduced())
+  }
+  frame=requestAnimationFrame(draw)
+  release=()=>{cancelAnimationFrame(frame);resize.disconnect();intersection.disconnect();element.removeEventListener('webglcontextlost',loss);renderer.current=null;scene.dispose();activePointers.clear();gesture.current=null}
+  }).catch(()=>{if(!disposed){setError('3D graphics are unavailable. The 2D view remains fully usable.');setFallback(true)}})
+  return()=>{disposed=true;release()}
+ },[fallback])
+ return <div ref={container} className="chamber-renderer" data-renderer={fallback?'2d':'3d'}>
+  {fallback?<Chamber2D capture={fallbackCapture} sim={props.sim} selected={props.selected} onSelect={props.onSelect} highlight={props.highlight} forces={props.forces} trails={props.trails} labels={props.labels} view={view} onPan={(x,y)=>setView(v=>({...v,x:v.x+x,y:v.y+y}))}/>:<>
+   <canvas ref={canvas} className="chamber-webgl" tabIndex={0} aria-label="Particle simulation in 3D. Drag to orbit, right drag or Shift drag to pan, scroll to zoom. Arrow keys orbit; Shift and arrows pan. Click to inspect."
+    onKeyDown={e=>{
+     const actions:Record<string,CameraAction>={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down','+':'zoom-in','=':'zoom-in','-':'zoom-out','0':'reset',t:'top',f:'frame'}
+     if(actions[e.key]){e.preventDefault();if(e.shiftKey&&e.key.startsWith('Arrow'))renderer.current?.panKey(e.key==='ArrowLeft'?-1:e.key==='ArrowRight'?1:0,e.key==='ArrowUp'?-1:e.key==='ArrowDown'?1:0);else renderer.current?.command(actions[e.key],props.sim.current,props.selected,reduced())}
+     if(e.key==='Escape')props.onSelect(null)
+    }}
+    onPointerDown={e=>{pointers.current.add(e.pointerId);if(pointers.current.size>1&&gesture.current)gesture.current.multi=true;else gesture.current={x:e.clientX,y:e.clientY,moved:false,multi:e.button!==0||e.shiftKey||e.ctrlKey}}}
+    onPointerMove={e=>{const g=gesture.current;if(g){if(Math.hypot(e.clientX-g.x,e.clientY-g.y)>4)g.moved=true;return}const r=e.currentTarget.getBoundingClientRect();hovered.current=renderer.current?.pick(e.clientX-r.left,e.clientY-r.top)??null;e.currentTarget.style.cursor=hovered.current===null?'grab':'pointer'}}
+    onPointerUp={e=>{const g=gesture.current;pointers.current.delete(e.pointerId);if(g&&!g.moved&&!g.multi){const r=e.currentTarget.getBoundingClientRect();props.onSelect(renderer.current?.pick(e.clientX-r.left,e.clientY-r.top)??null)}if(!pointers.current.size)gesture.current=null}}
+    onPointerCancel={e=>{pointers.current.delete(e.pointerId);gesture.current=null}} onPointerLeave={()=>{hovered.current=null}}
+   />
+   <canvas ref={overlay} className="chamber-hud" aria-hidden="true"/>
+  </>}
+  <div className="canvas-label"><b>{fallback?'PLANAR VIEW':'3D OBSERVATORY'}</b><span>{fallback?'DRAG TO PAN · SELECT TO INSPECT':'DRAG TO ORBIT · SCROLL TO ZOOM'}</span><span className="chamber-model-label">{fallback?'2D teaching model':'Planar physics · perspective view'}</span></div>
+  <div className="chamber-view-mode"><button onClick={()=>{setFallback(v=>!v);setError('')}}>{fallback?'Try 3D view':'Use 2D view'}</button><span>{fallback?'': 'SHIFT + DRAG TO PAN'}</span></div>
+  {error&&<p className="chamber-graphics-status" role="status">{error}</p>}
+ </div>
 }

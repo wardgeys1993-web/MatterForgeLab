@@ -1,0 +1,78 @@
+/* Instrument-style chamber. Rendering and controls share the same model viewport. */
+.app .viewport-panel {overflow:hidden;border-color:#aabfaf35;background:#101c23;box-shadow:0 22px 55px #0003,inset 0 1px #dae6c40b}
+.app .viewport-panel .panel-top {padding:22px 24px;background:linear-gradient(110deg,#1a2a2d,#101d24);align-items:center;gap:16px}
+.app .viewport-panel .panel-top h3 {font-family:'Newsreader Variable',Georgia,serif;font-size:27px;font-weight:400;letter-spacing:-.02em;margin-top:9px}
+.chamber-header-actions {display:flex;align-items:center;gap:22px;flex-direction:row-reverse}
+.chamber-fullscreen {display:flex;align-items:center;gap:8px;background:#13232a;border:1px solid #b9c6b32e;color:#c9c5ae;border-radius:5px;padding:10px;font-size:8px;letter-spacing:.12em;min-height:36px}
+.chamber-fullscreen:hover {border-color:#d4bd8488;background:#24322d}
+.chamber-view-error {font-size:10px;color:#e4b3a0;max-width:160px;line-height:1.5}
+.app .viewport-panel .canvas-wrap {height:560px;background:#081318;border-block:1px solid #adbcaa20}
+.app .viewport-panel .canvas-wrap:after {display:none}
+.app .viewport-panel canvas {touch-action:none;cursor:grab;outline-offset:-4px}
+.app .viewport-panel .canvas-label {top:21px;left:22px;pointer-events:none;text-shadow:none;display:flex;flex-direction:column;gap:7px;color:#a3b6ad;font-size:7px;letter-spacing:.13em}
+.app .viewport-panel .canvas-label b {color:#c8c3a8;font-weight:600;font-size:8px;letter-spacing:.18em}
+.app .viewport-panel .canvas-label span {font-size:7px;color:#8a9f9b}
+.app .viewport-panel .canvas-tools {top:18px;right:18px;gap:5px;padding:4px;border:1px solid #adc0b11c;background:#0b171dc9;border-radius:8px;backdrop-filter:blur(8px)}
+.app .viewport-panel .canvas-tools button {width:33px;height:33px;min-height:33px;border:0;border-radius:4px;background:transparent;color:#b7c9bb;box-shadow:none}
+.app .viewport-panel .canvas-tools button:hover {background:#a9c4b919;color:#f1dfb6}
+.chamber-key {display:flex;align-items:center;flex-wrap:wrap;gap:12px 21px;padding:14px 23px;border-bottom:1px solid #a8b9a516;background:#0e1b21;color:#acbfb9;font-size:9px;line-height:1.5}
+.chamber-key>span {display:flex;align-items:center;gap:8px;white-space:nowrap}
+.chamber-key small {color:#9daea7;font-size:8px;flex-basis:100%;letter-spacing:.03em}
+.key-particle {display:inline-block;width:9px;height:9px;border-radius:50%;box-shadow:inset 0 1px #ffffe866;border:1px solid #ffffff2b}
+.key-a {background:radial-gradient(circle at 30% 25%,#d7e8d7,#76aa9a 40%,#244b48)}
+.key-b {background:radial-gradient(circle at 30% 25%,#f1dfb0,#c1a05d 40%,#635130)}
+.key-bond {display:inline-block;width:17px;height:0;border-top:2px solid #d9ba7d}
+.key-unintended {border-top:2px dashed #dd8e81}
+.chamber-inspector {display:flex;gap:20px;align-items:center;position:relative;padding:17px 23px;background:linear-gradient(100deg,#1d2b2a77,#14222955);min-height:85px;border-bottom:1px solid #a8b9a516}
+.chamber-inspector label {display:flex;flex-direction:column;gap:8px;flex:none}
+.chamber-inspector label>span {font-size:7px;letter-spacing:.16em;color:#bbaa87}
+.chamber-inspector select {background:#0c191f;border:1px solid #a5bdac29;color:#d4ddd2;font-size:10px;padding:7px 26px 7px 10px;border-radius:5px;min-height:32px;max-width:200px}
+.chamber-inspector p {font-size:10px;color:#8da39d;line-height:1.65;margin:18px 0 0;max-width:235px}
+.particle-readings {display:flex;align-items:center;gap:24px;margin-top:6px;min-width:0;padding-right:20px;flex-wrap:wrap}
+.particle-readings span {display:flex;flex-direction:column;gap:8px}
+.particle-readings small {font-size:7px;letter-spacing:.12em;color:#8ca49d}
+.particle-readings b {font-size:11px;font-weight:500;color:#cddbc9;font-variant-numeric:tabular-nums;white-space:nowrap}
+.clear-particle {position:absolute;right:10px;top:10px;background:none;border:0;color:#a9bfb1;display:grid;place-items:center;min-width:28px;min-height:28px}
+.app .viewport-panel .transport {padding:17px 23px;gap:15px;flex-wrap:wrap;background:#101d23}
+.app .viewport-panel .transport-buttons {gap:8px}
+.app .viewport-panel .transport button {height:35px;min-width:35px;border:1px solid #a0b9a12b;background:#15272c;color:#bdd1bd;border-radius:5px;box-shadow:none}
+.app .viewport-panel .transport button.play {height:42px;min-width:45px;background:linear-gradient(130deg,#e6d2a4,#bd9d63);color:#17221e;border-color:#ddc38d77;box-shadow:0 3px 12px #0003}
+.app .viewport-panel .time {padding-left:8px;font-family:'Newsreader Variable',Georgia,serif;font-size:23px;color:#e1d7b8;font-variant-numeric:tabular-nums;white-space:nowrap}
+.app .viewport-panel .time small {font-family:'Manrope Variable',sans-serif;font-size:7px;color:#8da499;letter-spacing:.1em;margin-left:5px}
+.app .viewport-panel .toggles {gap:15px;font-size:10px;color:#b0c1b6}
+.app .viewport-panel .toggles label {display:flex;align-items:center;gap:5px;min-height:28px;cursor:pointer}
+.chamber-overlay-note {padding:0 23px 16px;margin:0;font-size:10px;line-height:1.7;color:#92aaa2;background:#101d23}
+.app .viewport-panel:fullscreen {width:100vw;height:100dvh;max-width:none;border:0;border-radius:0;display:flex;flex-direction:column;background:#0b161c;overflow:auto}
+.app .viewport-panel:fullscreen .canvas-wrap {flex:1;min-height:160px;height:auto}
+.app .viewport-panel:fullscreen .panel-top {padding:15px 28px}
+.app .viewport-panel:fullscreen .chamber-inspector {min-height:72px;padding-block:10px}
+.app .viewport-panel:fullscreen .transport {padding-block:10px}
+.app .viewport-panel:fullscreen .chamber-key {padding-block:10px}
+@media(max-width:1200px) and (min-width:901px){.chamber-header-actions{gap:13px}.chamber-inspector{gap:16px;flex-wrap:wrap}.particle-readings{gap:20px}.app .viewport-panel .canvas-wrap{height:490px}.app .viewport-panel .toggles{gap:11px}}
+@media(max-width:760px){
+ .app .viewport-panel .panel-top{padding:19px 17px}.app .viewport-panel .panel-top h3{font-size:25px}
+ .chamber-header-actions{gap:10px;flex-direction:column;align-items:flex-end}.chamber-fullscreen{padding:7px;min-height:30px;font-size:7px;gap:6px}
+ .app .viewport-panel .canvas-wrap{height:430px}.app .viewport-panel .canvas-label{top:17px;left:15px;font-size:7px}.app .viewport-panel .canvas-label span{font-size:6px;max-width:140px;line-height:1.7}
+ .app .viewport-panel .canvas-tools{right:10px;top:12px}.app .viewport-panel .canvas-tools button{width:29px;height:29px;min-height:29px}
+ .chamber-key{padding:13px 15px;gap:10px 15px;font-size:8px}.chamber-key small{line-height:1.8}
+ .chamber-inspector{padding:16px 15px;gap:14px;flex-wrap:wrap}.chamber-inspector p{margin:0;max-width:none;font-size:10px}.chamber-inspector label{width:100%}.chamber-inspector select{max-width:100%;width:100%;font-size:11px}
+ .particle-readings{gap:16px;justify-content:space-between;width:100%;padding:0;margin-top:0}.particle-readings b{font-size:10px}
+ .app .viewport-panel .transport{padding:14px 15px;gap:12px}.app .viewport-panel .transport-buttons{gap:7px}.app .viewport-panel .time{font-size:22px;padding-left:4px}.app .viewport-panel .time small{font-size:6px}
+ .app .viewport-panel .toggles{width:100%;justify-content:flex-end;gap:18px;border-top:1px solid #a1b89f14;padding-top:6px}.chamber-overlay-note{padding:0 15px 15px}
+ .app .viewport-panel:fullscreen .chamber-inspector{display:none}.app .viewport-panel:fullscreen .toggles{width:auto;border:0;padding:0}
+}
+@media(max-width:370px){.app .viewport-panel .panel-top h3{font-size:22px}.chamber-fullscreen span{display:none}.app .viewport-panel .canvas-wrap{height:390px}.particle-readings{gap:8px}.particle-readings b{font-size:9px}}
+
+/* Three-dimensional viewing layer over the unchanged planar simulation. */
+.chamber-renderer {position:absolute;inset:0;isolation:isolate}
+.chamber-renderer:after {content:'';position:absolute;inset:0 0 auto;height:160px;background:linear-gradient(180deg,#09151cbb,#09151c00);pointer-events:none;z-index:1}
+.app .viewport-panel .chamber-renderer canvas {position:absolute;inset:0;width:100%;height:100%;display:block}
+.app .viewport-panel .chamber-hud {pointer-events:none;z-index:1}
+.app .viewport-panel .canvas-label {z-index:2}
+.app .viewport-panel .canvas-tools {z-index:3}
+.app .viewport-panel .canvas-label .chamber-model-label {font-size:9px;letter-spacing:.015em;color:#92aaa5;margin-top:3px;text-transform:none}
+.chamber-view-mode {position:absolute;left:20px;top:99px;z-index:2;display:flex;gap:12px;align-items:center}
+.chamber-view-mode button {font-size:9px;padding:7px 10px;min-height:30px;background:#0c1b22c9;border:1px solid #9bb6aa35;border-radius:5px;color:#bfcec1}
+.chamber-view-mode span {font-size:6px;letter-spacing:.1em;color:#7f9c98;pointer-events:none}
+.chamber-graphics-status {position:absolute;left:16px;bottom:49px;right:16px;z-index:4;font-size:11px;color:#dfc49a;background:#101e27ed;border:1px solid #ba9c6755;border-radius:5px;padding:10px 12px;max-width:400px}
+@media(max-width:760px){.chamber-view-mode{left:15px;top:91px;gap:8px}.chamber-view-mode span{display:none}.app .viewport-panel .canvas-label .chamber-model-label{font-size:8px}.app .viewport-panel .canvas-tools{gap:3px}.app .viewport-panel .canvas-label{max-width:calc(100% - 65px)}}

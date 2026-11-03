@@ -1,4 +1,4 @@
-# MatterForge Lab 0.8.0
+# MatterForge Lab 0.8.1
 
 A local scientific playground for exploring how simple interaction rules can produce connected structures. This is an educational model, not a chemistry prediction tool. No account, cloud service, API key or dedicated GPU is required. The simulation works offline. Optional update checks contact GitHub, the optional AI explainer contacts a user-selected loopback server, and reference links open the system browser only when requested.
 
@@ -9,6 +9,8 @@ Download [the latest Windows installer](https://github.com/wardgeys1993-web/Matt
 Use **App updates** in the header to check GitHub, download a verified release, and restart when ready. Updates are checked manually. Signed release metadata and installer checksums are verified before installation. Builds currently have no Microsoft Authenticode certificate, so Windows may show an unfamiliar-publisher warning.
 
 Settings, experiment A and research checkpoints stay in your local app-data folder across updates. The desktop chamber is saved every ten seconds and on normal close. Pause research before restarting to save the current partial trial. To move browser experiments into the desktop app, export JSON in the browser and import it in the app. Browser and desktop storage are separate.
+
+The live chamber now has a 3D view of the unchanged planar model. Drag to orbit, Shift-drag to pan, and scroll to zoom. Smooth framing, top view, fullscreen and a particle inspector support close observation. Satin materials and studio lighting change presentation only. A 2D fallback remains available. See [the chamber guide](docs/CHAMBER_3D.md).
 
 The **Research lab** searches bounded parameter combinations, compares finalists with a baseline, and uses fresh confirmation seeds before reporting its result. Sessions support pause, resume, checkpoint recovery, JSON import/export and trial replay. The optional local AI explainer can explain recorded evidence, but cannot change measurements or run code. See [research architecture](docs/RESEARCH_AUTONOMY.md).
 

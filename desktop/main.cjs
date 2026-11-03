@@ -3,6 +3,7 @@ const {autoUpdater} = require('electron-updater')
 const path = require('node:path')
 const {pathToFileURL} = require('node:url')
 const {DesktopUpdater} = require('./updater.cjs')
+const {allowFullscreen} = require('./permissions.cjs')
 
 const APP_URL = 'app://matterforge/'
 const PROJECT_URL = 'https://github.com/wardgeys1993-web/MatterForgeLab'
@@ -28,8 +29,8 @@ else {
       if (!file.startsWith(root + path.sep)) return new Response('Forbidden', {status:403})
       return net.fetch(pathToFileURL(file).href)
     })
-    session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false))
-    session.defaultSession.setPermissionCheckHandler(() => false)
+    session.defaultSession.setPermissionRequestHandler((contents, permission, callback, details) => callback(allowFullscreen(window, contents, permission, details)))
+    session.defaultSession.setPermissionCheckHandler((contents, permission, _origin, details) => allowFullscreen(window, contents, permission, details))
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
       const headers = {...details.responseHeaders}
       if (isApp(details.url)) headers['Content-Security-Policy'] = ["default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' http://127.0.0.1:* http://localhost:* http://[::1]:*; worker-src 'self'; object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'none'"]

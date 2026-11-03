@@ -1,5 +1,13 @@
 # MatterForge Lab roadmap
 
+## 2026-11-03, 0.8.1 3D chamber integration in progress
+
+Integrated the reviewed 3D chamber, satin materials and studio lighting through an explicit file list and a narrow chamber UI patch. Preserved the protocol, recovery hooks, engine, research files, public verification key and updater. Enabled fullscreen only for the trusted app main frame. Added the rendering dependencies and bumped package metadata to 0.8.1. The verified publishing account is wardgeys1993-web and the release target is wardgeys1993-web/MatterForgeLab. No 0.8.1 release has been published yet.
+
+Verification: 81 model/research/rendering tests, seven desktop tests, lint, production build and installer build passed. Packaged native checks covered real research, save/reopen preservation, camera controls, fullscreen, PNG export, reduced motion and WebGL loss/retry. The inspected installer payload matches the tested archive. Its public key and update feed are unchanged. Source-history and package secret scans passed. The default desktop profile was backed up privately after normal shutdown; a separate installed 0.8.0 profile holds a saved chamber, experiment A and completed research for the transition check.
+
+Next: finish the staged-content privacy review, sign with the existing external key, publish the five reviewed assets, and verify the installed public 0.8.0 to 0.8.1 update with saved-data comparison. Local continuation details are excluded from public source. No implementation blocker is known. Wider GPU coverage, full accessibility testing, Authenticode signing and build-toolchain advisories remain open.
+
 ## 2026-11-03, shared publishing instructions
 
 Strengthened the repository instructions to require the shared ship skill, correct account and repository checks, privacy review of source/history and packaged artifacts, preservation of the existing signing key and update identity, and proof of the published assets and installed update behavior. Clarified that newer feature work in the sibling source folder must be deliberately integrated without overwriting the desktop release implementation or downgrading the public version. The shared local rules and skill were updated, and the other two MatterForge development chats were notified. This is an instructions-only change; no app version, installer or update feed changed.
