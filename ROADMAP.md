@@ -1,12 +1,14 @@
 # MatterForge Lab roadmap
 
-## 2026-11-03, 0.8.1 3D chamber integration in progress
+## 2026-11-03, 0.8.1 3D chamber published and installed
 
-Integrated the reviewed 3D chamber, satin materials and studio lighting through an explicit file list and a narrow chamber UI patch. Preserved the protocol, recovery hooks, engine, research files, public verification key and updater. Enabled fullscreen only for the trusted app main frame. Added the rendering dependencies and bumped package metadata to 0.8.1. The verified publishing account is wardgeys1993-web and the release target is wardgeys1993-web/MatterForgeLab. No 0.8.1 release has been published yet.
+Integrated the reviewed 3D chamber, satin materials and studio lighting through an explicit file list and a narrow chamber UI patch. Preserved the protocol, recovery hooks, engine, research files, public verification key and updater. Enabled fullscreen only for the trusted app main frame. Added the rendering dependencies and bumped package metadata to 0.8.1. Published commit 671c20e as v0.8.1 through the verified wardgeys1993-web account to wardgeys1993-web/MatterForgeLab.
 
 Verification: 81 model/research/rendering tests, seven desktop tests, lint, production build and installer build passed. Packaged native checks covered real research, save/reopen preservation, camera controls, fullscreen, PNG export, reduced motion and WebGL loss/retry. The inspected installer payload matches the tested archive. Its public key and update feed are unchanged. Source-history and package secret scans passed. The default desktop profile was backed up privately after normal shutdown; a separate installed 0.8.0 profile holds a saved chamber, experiment A and completed research for the transition check.
 
-Next: finish the staged-content privacy review, sign with the existing external key, publish the five reviewed assets, and verify the installed public 0.8.0 to 0.8.1 update with saved-data comparison. Local continuation details are excluded from public source. No implementation blocker is known. Wider GPU coverage, full accessibility testing, Authenticode signing and build-toolchain advisories remain open.
+GitHub lists all five release assets, including the 126,319,443-byte installer. A separately downloaded public copy passed the existing Ed25519 signature, signed feed, size and checksum checks. The actual installed public 0.8.0 app found, verified, downloaded and installed 0.8.1, then relaunched. Experiment A, the chamber, settings and completed research matched their pre-update saved bytes. The normal desktop profile was separately compared and preserved. The installed 3D view opened and its next update check reported the latest stable release. The real native confirmation was observed; its acceptance used the test harness because native input geometry was unavailable in the automated test window.
+
+Next: wider GPU coverage, full accessibility testing, Authenticode signing and the existing build-toolchain advisories. No release blocker remains. Private test profiles, backups and reports are excluded from public source. See [the release receipt](docs/RELEASE_0_8_1.md).
 
 ## 2026-11-03, shared publishing instructions
 
